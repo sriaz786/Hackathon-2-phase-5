@@ -1,0 +1,31 @@
+# Phase 5: Advanced Cloud Deployment - Specifications
+
+## 1. Overview
+This phase focuses on re-architecting the application into an **Event-Driven Architecture** using **Dapr** and **Kafka**. We strictly follow Spec-Driven Development.
+
+## 2. Advanced Features User Stories
+
+### Recurring Tasks
+> "As a user, I want to set a task to repeat automatically so that I don't have to recreate it manually."
+
+- **Story 1:** As a user, I can set a task to repeat daily, weekly, or monthly.
+- **Story 2:** As a user, when I complete a recurring task context instance, the next instance is automatically created based on the schedule.
+- **Story 3:** As a user, I can stop a recurring task from generating future instances.
+
+### Due Dates & Time Management
+> "As a user, I want to track when tasks must be completed."
+
+- **Story 4:** As a user, I can assign a specific due date and time to a task.
+- **Story 5:** As a user, I can view tasks sorted by their due date (e.g., "Overdue", "Today", "Upcoming").
+
+### Reminders & Notifications
+> "As a user, I want to be notified before a task is due."
+
+- **Story 6:** As a user, I can set a reminder for a specific time before the due date (e.g., 1 hour before, 1 day before).
+- **Story 7:** As a user, I receive a notification (email or UI alert) when the reminder time triggers.
+- **Story 8:** As a user, I can manage (update/delete) my reminders.
+
+## 3. Non-Functional Requirements
+- **Event-Driven:** All state changes (Task Created, Updated, Completed, Deleted) must emit events to a message bus.
+- **Scalability:** Services must be decoupled; the Notification logic should run independently of the main API.
+- **Reliability:** Dapr should handle retry logic and state management for distributed workflows.

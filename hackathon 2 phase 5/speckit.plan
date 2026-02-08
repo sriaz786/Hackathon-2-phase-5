@@ -1,0 +1,79 @@
+# Phase 5: Event-Driven Architecture Plan
+
+## 1. Event Schema Design
+We will use CloudEvents format where possible, but for simplicity in early phases, we define our custom JSON payloads.
+
+### Topics
+| Topic Name | Producer | Consumers | Purpose |
+| :--- | :--- | :--- | :--- |
+| `task-events` | Backend API | Reminder Service, Analytics | Task creation, updates, completion. |
+| `reminders` | Scheduler | Notification Service | Triggering user notifications. |
+| `task-updates` | Worker | Backend API | Recurring task generation confirmation. |
+
+### Payload Structures
+
+#### `task-events`
+```json
+{
+  "event_id": "uuid",
+  "event_type": "task.created | task.completed | task.due_updated",
+  "timestamp": "ISO8601",
+  "data": {
+    "task_id": 123,
+    "user_id": 456,
+    "title": "Buy Milk",
+    "due_date": "2023-12-25T10:00:00Z",
+    "recurring_rule": "weekly" // Optional
+  }
+}
+```
+
+#### `reminders`
+```json
+{
+  "reminder_id": "uuid",
+  "task_id": 123,
+  "user_id": 456,
+  "message": "Task 'Buy Milk' is due in 1 hour.",
+  "channel": "email | in-app"
+}
+```
+
+## 2. Dapr Components Configuration
+
+### Pub/Sub (Kafka/Redpanda)
+- **Component Name:** `pubsub`
+- **Type:** `pubsub.kafka`
+- **Metadata:**
+    - `brokers`: `localhost:9092` (local), `kafka-broker:9092` (k8s)
+    - `authRequired`: `false` (for local dev)
+
+### State Store (PostgreSQL)
+- **Component Name:** `statestore`
+- **Type:** `state.postgresql`
+- **Metadata:**
+    - `connectionString`: `host=localhost user=postgres password=...`
+
+### Bindings (Cron / Jobs)
+- **Component Name:** `scheduled-tasks`
+- **Type:** `bindings.cron`
+- **Metadata:**
+    - `schedule`: `*/15 * * * *` (Every 15 mins to check for recurring tasks)
+
+## 3. Service Decoupling Strategy
+
+### Core Services
+1.  **Backend API (Existing):**
+    - Handles REST/GraphQL requests.
+    - Publishes to `task-events`.
+    - Subscribes to `task-updates` (to update local DB state if needed).
+
+2.  **Notification Service (New):**
+    - Subscribes to `reminders` topic.
+    - Integrates with Maildev (local) or SendGrid (cloud).
+    - Stateless: Recipient info is in the payload.
+
+3.  **Recurring Task Worker (New):**
+    - Subscribes to `task-events` (to track new recurring rules).
+    - Uses Dapr Cron Binding or Dapr Workflow to generate new tasks.
+    - Publishes `task-events` (when a new instance is created).

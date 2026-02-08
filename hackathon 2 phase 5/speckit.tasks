@@ -1,0 +1,33 @@
+# Phase 5 Implementation Checklist
+
+- [ ] **1. Architecture & Dapr Setup**
+    - [ ] Install Dapr CLI and initialize in standalone mode (for local dev).
+    - [ ] Configure `dapr/components/pubsub.yaml` (Kafka/Redpanda).
+    - [ ] Configure `dapr/components/statestore.yaml` (PostgreSQL).
+    - [ ] Configure `dapr/components/binding.yaml` (Cron).
+    - [ ] Verify Dapr sidecar injection in local K8s (or run locally with `dapr run`).
+
+- [ ] **2. Kafka Infrastructure**
+    - [ ] Deploy Strimzi or Redpanda to local Minikube.
+    - [ ] Create topics: `task-events`, `reminders`, `task-updates`.
+    - [ ] Verify message production/consumption using `kcat` or CLI.
+
+- [ ] **3. Backend Enhancements (Producer/Consumer)**
+    - [ ] Install `dapr-python-sdk` or `cloudevents` library.
+    - [ ] Implement Publisher service in FastAPI (to `task-events`).
+    - [ ] Implement Generic Subscriber endpoint (dapr-subscribed) or background worker.
+
+- [ ] **4. Advanced Features Implementation**
+    - [ ] **Recurring Tasks:**
+        - [ ] Implement logic to calculate next due date.
+        - [ ] Implement "Recurring Task Worker" to listen for completion events.
+        - [ ] Test weekly/monthly regeneration.
+    - [ ] **Reminders:**
+        - [ ] Implement Scheduler Binding (or standalone cron) to scan for due tasks.
+        - [ ] Publish to `reminders` topic.
+        - [ ] Implement "Notification Service" (mock logger or emailer) to consume `reminders`.
+
+- [ ] **5. Cloud Deployment (Final)**
+    - [ ] Provision Managed K8s (DOKS or AKS).
+    - [ ] Deploy Dapr on Cloud K8s.
+    - [ ] Deploy Application Helm Charts.

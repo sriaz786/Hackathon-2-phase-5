@@ -1,0 +1,39 @@
+global:
+  environment: development
+
+backend:
+  replicaCount: 1
+  image:
+    repository: backend
+    pullPolicy: IfNotPresent
+    tag: "v1"
+  service:
+    type: ClusterIP
+    port: 8000
+  env:
+    DATABASE_URL: "postgresql://user:password@hackathon-app-postgres:5432/hackathon_db"
+    # Secrets will be injected separately
+
+frontend:
+  replicaCount: 1
+  image:
+    repository: frontend
+    pullPolicy: IfNotPresent
+    tag: "v1"
+  service:
+    type: ClusterIP
+    port: 3000
+  env:
+    NEXT_PUBLIC_API_URL: "http://localhost:8000" # For browser access, might need Ingress host
+
+postgres:
+  image:
+    repository: postgres
+    tag: "15-alpine"
+  auth:
+    username: user
+    password: password
+    database: hackathon_db
+  persistence:
+    enabled: true
+    size: 1Gi

@@ -1,0 +1,25 @@
+# Project Constitution
+
+## 1. Principles
+- **Spec-Driven**: No code is written without a corresponding Task and Spec.
+- **AI-Native**: Use AI tools (Claude, Copilot) for implementation.
+- **Event-Driven**: All major state changes (Task Created, Completed) must emit events.
+- **Microservices-Ready**: Components should be loosely coupled (via Dapr).
+- **Clean Architecture**: Separation of concerns (API -> Service -> Repository/Model).
+
+## 2. Technology Constraints
+- **Backend**: FastAPI, SQLModel (Async), Python 3.12+
+- **Frontend**: Next.js 14+ (App Router), Tailwind CSS
+- **Database**: PostgreSQL (Neon)
+- **Runtime**: Dapr (Sidecar pattern)
+- **Event Bus**: Kafka (Redpanda)
+
+## 3. Security
+- All APIs must be authenticated (JWT).
+- Secrets must be loaded from Environment Variables or Secret Store.
+- No hardcoded credentials.
+
+## 4. Quality Standards
+- Type hints are mandatory.
+- Code must pass linting (ruff/flake8).
+- Endpoints must have Swagger documentation.

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: hackathon-app
+description: Umbrella chart for Hackathon Phase 4 Application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+dependencies:
+  - name: backend
+    version: 0.1.0
+    # condition: backend.enabled
+  - name: frontend
+    version: 0.1.0
+    # condition: frontend.enabled
+  - name: postgres
+    version: 0.1.0
+    # condition: postgres.enabled
